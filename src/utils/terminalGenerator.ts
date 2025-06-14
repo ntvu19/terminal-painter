@@ -242,3 +242,25 @@ function interpolateColor(
     .toString(16)
     .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
+
+export function generateRainbowAnsiSequence(text: string): string {
+  if (!text.trim()) return "";
+  const colorCodes = ["31", "33", "32", "36", "34", "35"]; // Red, Yellow, Green, Cyan, Blue, Magenta
+  let result = "";
+  for (let i = 0; i < text.length; i++) {
+    const code = colorCodes[i % colorCodes.length];
+    result += `\x1b[${code}m${text[i]}`;
+  }
+  result += "\x1b[0m"; // Reset at the end
+  return result;
+}
+
+export function generateRainbowBashCommand(text: string): string {
+  const ansiText = generateRainbowAnsiSequence(text);
+  return `echo -e "${ansiText.replace(/\x1b/g, "\\033")}"`;
+}
+
+export function generateRainbowPythonCommand(text: string): string {
+  const ansiText = generateRainbowAnsiSequence(text);
+  return `print("${ansiText.replace(/\x1b/g, "\\033")}")`;
+}

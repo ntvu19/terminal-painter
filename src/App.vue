@@ -265,9 +265,11 @@ import {
   generatePowerShellCommand,
   generatePythonCommand,
   generateBashCommand,
-  generateStyledText,
+  generateRainbowBashCommand,
+  generateRainbowPythonCommand,
   generateRainbowText,
-  generateGradientText
+  generateGradientText,
+  generateStyledText
 } from '@/utils/terminalGenerator'
 
 // Reactive state
@@ -313,6 +315,19 @@ const backgroundColors = {
 // Computed properties
 const generatedCommand = computed(() => {
   if (!terminalState.rawText.trim()) return ''
+
+  // If rainbow mode is active, use rainbow command generators
+  if (rainbowMode.value) {
+    switch (currentFormat.value) {
+      case 'bash':
+        return generateRainbowBashCommand(terminalState.rawText)
+      case 'python':
+        return generateRainbowPythonCommand(terminalState.rawText)
+      // Rainbow PowerShell output is not implemented; fallback to standard generation
+      default:
+        return generateRainbowBashCommand(terminalState.rawText)
+    }
+  }
 
   switch (currentFormat.value) {
     case 'bash':
