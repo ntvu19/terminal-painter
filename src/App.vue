@@ -427,6 +427,7 @@ const toggleRainbowMode = () => {
   rainbowMode.value = !rainbowMode.value
   if (rainbowMode.value) {
     showGradient.value = false
+    showAsciiArt.value = false
   }
 }
 
@@ -434,6 +435,7 @@ const toggleGradientMode = () => {
   showGradient.value = !showGradient.value
   if (showGradient.value) {
     rainbowMode.value = false
+    showAsciiArt.value = false
   }
 }
 
