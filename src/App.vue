@@ -241,13 +241,19 @@
                 <span>🌈 Rainbow Mode</span>
                 <span v-if="rainbowMode" class="text-xs">✓</span>
               </button>
-              <button @click="toggleAsciiArtMode"
-                class="w-full text-left px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
-                🎨 ASCII Art Generator
+              <button @click="toggleAsciiArtMode" :class="[
+                'w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center justify-between',
+                showAsciiArt ? 'bg-blue-500 text-white' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+              ]">
+                <span>🎨 ASCII Art Generator</span>
+                <span v-if="showAsciiArt" class="text-xs">✓</span>
               </button>
-              <button @click="toggleGradientMode"
-                class="w-full text-left px-3 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors">
-                🎨 Gradient Text
+              <button @click="toggleGradientMode" :class="[
+                'w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center justify-between',
+                showGradient ? 'bg-purple-500 text-white' : 'bg-purple-50 text-purple-700 hover:bg-purple-100'
+              ]">
+                <span>🎨 Gradient Text</span>
+                <span v-if="showGradient" class="text-xs">✓</span>
               </button>
             </div>
           </div>
