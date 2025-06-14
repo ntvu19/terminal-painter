@@ -245,7 +245,7 @@
                 class="w-full text-left px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
                 🎨 ASCII Art Generator
               </button>
-              <button @click="showGradient = !showGradient"
+              <button @click="toggleGradientMode"
                 class="w-full text-left px-3 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors">
                 🎨 Gradient Text
               </button>
@@ -267,6 +267,8 @@ import {
   generateBashCommand,
   generateRainbowBashCommand,
   generateRainbowPythonCommand,
+  generateGradientBashCommand,
+  generateGradientPythonCommand,
   generateRainbowText,
   generateGradientText,
   generateStyledText
@@ -326,6 +328,18 @@ const generatedCommand = computed(() => {
       // Rainbow PowerShell output is not implemented; fallback to standard generation
       default:
         return generateRainbowBashCommand(terminalState.rawText)
+    }
+  }
+
+  // Gradient mode (only if not rainbow)
+  if (showGradient.value) {
+    switch (currentFormat.value) {
+      case 'bash':
+        return generateGradientBashCommand(terminalState.rawText)
+      case 'python':
+        return generateGradientPythonCommand(terminalState.rawText)
+      default:
+        return generateGradientBashCommand(terminalState.rawText)
     }
   }
 
@@ -390,6 +404,13 @@ const toggleRainbowMode = () => {
   rainbowMode.value = !rainbowMode.value
   if (rainbowMode.value) {
     showGradient.value = false
+  }
+}
+
+const toggleGradientMode = () => {
+  showGradient.value = !showGradient.value
+  if (showGradient.value) {
+    rainbowMode.value = false
   }
 }
 

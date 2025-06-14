@@ -262,5 +262,58 @@ export function generateRainbowBashCommand(text: string): string {
 
 export function generateRainbowPythonCommand(text: string): string {
   const ansiText = generateRainbowAnsiSequence(text);
-  return `print("${ansiText.replace(/\x1b/g, "\\033")}")`;
+  return `print("${ansiText.replace(/\\x1b/g, "\\\\033")}")`;
+}
+
+// Gradient command helpers
+export function generateGradientAnsiSequence(
+  text: string,
+  startColor: string = "#ff0000",
+  endColor: string = "#0000ff"
+): string {
+  if (!text.trim()) return "";
+
+  const hexToRgb = (hex: string) => {
+    const clean = hex.replace("#", "");
+    return {
+      r: parseInt(clean.substring(0, 2), 16),
+      g: parseInt(clean.substring(2, 4), 16),
+      b: parseInt(clean.substring(4, 6), 16),
+    };
+  };
+
+  const start = hexToRgb(startColor);
+  const end = hexToRgb(endColor);
+
+  let result = "";
+  const len = text.length;
+
+  for (let i = 0; i < len; i++) {
+    const ratio = len === 1 ? 0 : i / (len - 1);
+    const r = Math.round(start.r + (end.r - start.r) * ratio);
+    const g = Math.round(start.g + (end.g - start.g) * ratio);
+    const b = Math.round(start.b + (end.b - start.b) * ratio);
+    result += `\x1b[38;2;${r};${g};${b}m${text[i]}`;
+  }
+
+  result += "\x1b[0m"; // reset
+  return result;
+}
+
+export function generateGradientBashCommand(
+  text: string,
+  startColor?: string,
+  endColor?: string
+): string {
+  const ansiText = generateGradientAnsiSequence(text, startColor, endColor);
+  return `echo -e "${ansiText.replace(/\x1b/g, "\\033")}"`;
+}
+
+export function generateGradientPythonCommand(
+  text: string,
+  startColor?: string,
+  endColor?: string
+): string {
+  const ansiText = generateGradientAnsiSequence(text, startColor, endColor);
+  return `print(\"${ansiText.replace(/\x1b/g, "\\033")}\")`;
 }
