@@ -1,4 +1,10 @@
 import type { TextStyle, TerminalState } from "@/types";
+// @ts-ignore - figlet types provided via @types/figlet during runtime
+import figlet from "figlet";
+import standardFont from "figlet/importable-fonts/Standard.js";
+
+// Preload the standard font for browser usage
+figlet.parseFont("Standard", standardFont);
 
 // ANSI color codes
 const ANSI_COLORS = {
@@ -316,4 +322,58 @@ export function generateGradientPythonCommand(
 ): string {
   const ansiText = generateGradientAnsiSequence(text, startColor, endColor);
   return `print(\"${ansiText.replace(/\x1b/g, "\\033")}\")`;
+}
+
+// -----------------------------
+// ASCII Art Generator Helpers
+// -----------------------------
+
+export function generateAsciiArt(
+  text: string,
+  font: string = "Standard"
+): string {
+  if (!text.trim()) return "";
+  // Ensure the font is parsed (already parsed at top for Standard)
+  try {
+    return figlet.textSync(text, { font });
+  } catch (e) {
+    console.error("Figlet generation failed", e);
+    return text;
+  }
+}
+
+function escapeForDoubleQuotes(str: string): string {
+  return str
+    .replace(/\\/g, "\\\\") // escape backslashes first
+    .replace(/\n/g, "\\n")
+    .replace(/"/g, '\\"');
+}
+
+export function generateAsciiBashCommand(
+  state: TerminalState,
+  font: string = "Standard"
+): string {
+  const ascii = generateAsciiArt(state.rawText, font);
+  const escaped = escapeForDoubleQuotes(ascii);
+  return `echo -e "${escaped}"`;
+}
+
+export function generateAsciiPythonCommand(
+  state: TerminalState,
+  font: string = "Standard"
+): string {
+  const ascii = generateAsciiArt(state.rawText, font);
+  const escaped = ascii.replace(/\\/g, "\\\\").replace(/\n/g, "\\n");
+  return `print(\"${escaped}\")`;
+}
+
+export function generateAsciiPowerShellCommand(
+  state: TerminalState,
+  font: string = "Standard"
+): string {
+  const ascii = generateAsciiArt(state.rawText, font);
+  // Use here-string for multi-line string in PowerShell
+  return `@"
+${ascii}
+"@`;
 }

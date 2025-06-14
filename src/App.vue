@@ -241,7 +241,7 @@
                 <span>🌈 Rainbow Mode</span>
                 <span v-if="rainbowMode" class="text-xs">✓</span>
               </button>
-              <button @click="showAsciiArt = !showAsciiArt"
+              <button @click="toggleAsciiArtMode"
                 class="w-full text-left px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
                 🎨 ASCII Art Generator
               </button>
@@ -269,6 +269,9 @@ import {
   generateRainbowPythonCommand,
   generateGradientBashCommand,
   generateGradientPythonCommand,
+  generateAsciiBashCommand,
+  generateAsciiPythonCommand,
+  generateAsciiArt,
   generateRainbowText,
   generateGradientText,
   generateStyledText
@@ -318,6 +321,19 @@ const backgroundColors = {
 const generatedCommand = computed(() => {
   if (!terminalState.rawText.trim()) return ''
 
+  // ASCII Art mode takes precedence
+  if (showAsciiArt.value) {
+    switch (currentFormat.value) {
+      case 'bash':
+        return generateAsciiBashCommand(terminalState)
+      case 'python':
+        return generateAsciiPythonCommand(terminalState)
+      // powerShell fallback to plain bash style
+      default:
+        return generateAsciiBashCommand(terminalState)
+    }
+  }
+
   // If rainbow mode is active, use rainbow command generators
   if (rainbowMode.value) {
     switch (currentFormat.value) {
@@ -357,6 +373,13 @@ const generatedCommand = computed(() => {
 
 const styledPreviewText = computed(() => {
   if (!terminalState.rawText.trim()) return ''
+
+  if (showAsciiArt.value) {
+    const art = generateAsciiArt(terminalState.rawText)
+    // Encode HTML safe characters and preserve spacing
+    const html = art.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br/>')
+    return `<pre style="margin:0">${html}</pre>`
+  }
 
   if (rainbowMode.value) {
     return generateRainbowText(terminalState.rawText)
@@ -411,6 +434,14 @@ const toggleGradientMode = () => {
   showGradient.value = !showGradient.value
   if (showGradient.value) {
     rainbowMode.value = false
+  }
+}
+
+const toggleAsciiArtMode = () => {
+  showAsciiArt.value = !showAsciiArt.value
+  if (showAsciiArt.value) {
+    rainbowMode.value = false
+    showGradient.value = false
   }
 }
 
